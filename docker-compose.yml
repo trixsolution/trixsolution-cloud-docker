@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: trixsolution_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - db
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: trixsolution_cloud
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret
+
+  db:
+    image: mysql:8.0
+    container_name: trixsolution_db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: trixsolution_cloud
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:

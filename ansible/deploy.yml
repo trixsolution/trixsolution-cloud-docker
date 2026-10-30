@@ -16,11 +16,13 @@
       shell: minikube status >/dev/null 2>&1 || minikube start --driver=docker
       changed_when: false
 
-    - name: Build the Laravel image inside minikube
-      shell: eval $(minikube docker-env) && docker build -t laravel-app:1.0 .
+    - name: Build the Laravel image with Docker
+      command: docker build --load -t laravel-app:1.0 .
       args:
         chdir: "{{ app_dir }}"
-        executable: /bin/bash
+
+    - name: Load the image into minikube
+      command: minikube image load laravel-app:1.0
 
     - name: Apply all Kubernetes files
       command: kubectl apply -f k8s/

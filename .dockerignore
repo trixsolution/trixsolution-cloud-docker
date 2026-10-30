@@ -1,11 +1,6 @@
+.git
+.env
 vendor
 node_modules
-.env
-.git
-.gitignore
+*.tar.gz
 storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-Dockerfile
-docker-compose.yml

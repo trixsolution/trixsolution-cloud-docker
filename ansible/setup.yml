@@ -1,0 +1,47 @@
+- name: Set up the DevOps environment
+  hosts: local
+  become: yes
+  vars:
+    student_user: "{{ lookup('env', 'USER') }}"
+  tasks:
+    - name: Install git, curl and Docker
+      apt:
+        name: [git, curl, docker.io]
+        state: present
+        update_cache: yes
+
+    - name: Start Docker and enable it on boot
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add the user to the docker group
+      user:
+        name: "{{ student_user }}"
+        groups: docker
+        append: yes
+
+    - name: Install kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        rm -f kubectl
+      args:
+        chdir: /tmp
+        creates: /usr/local/bin/kubectl
+
+    - name: Install minikube
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: "0755"
+
+    - name: Check versions
+      shell: docker --version && kubectl version --client && minikube version
+      register: versions
+      changed_when: false
+
+    - name: Show versions
+      debug:
+        var: versions.stdout_lines

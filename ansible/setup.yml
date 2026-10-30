@@ -1,6 +1,8 @@
 - name: Set up the DevOps environment
   hosts: local
   become: yes
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   vars:
     student_user: "{{ lookup('env', 'USER') }}"
   tasks:
